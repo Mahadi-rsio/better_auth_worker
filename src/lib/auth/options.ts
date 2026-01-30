@@ -1,13 +1,15 @@
 import { BetterAuthOptions } from 'better-auth';
 import { jwt } from 'better-auth/plugins';
 import { redis } from './redis.js';
-import { openAPI , bearer } from 'better-auth/plugins'
+import { bearer } from 'better-auth/plugins'
+import 'dotenv/config'
 
 // In here User delete is disabled
 // Currently add redis for session only
 // we have to make custom adapter for jwt cache for redis
 // jwt expirationTime is set for 7 days 
 // cookieCache has 30 minuite expirationTime
+// import openAPI to use
 
 export const betterAuthOptions: BetterAuthOptions = {
     appName: 'Auth',
@@ -18,8 +20,8 @@ export const betterAuthOptions: BetterAuthOptions = {
     /*@Todo -- Like your Frontend app url */
     /*@Todo -- http://localhost:5173 */
     trustedOrigins: [
-        'http://localhost:5173'
         //Your Other origin here or Frontend
+        process.env.ORIGIN!
     ],
 
      
@@ -43,7 +45,10 @@ export const betterAuthOptions: BetterAuthOptions = {
                 expirationTime : 60 * 60 * 24 * 7,
             },
         }),
-        openAPI(),
+        
+        // openAPI is disabled by default
+        //openAPI(),
+        
         bearer()
         
     ],
@@ -67,5 +72,27 @@ export const betterAuthOptions: BetterAuthOptions = {
 
     account : {
         encryptOAuthTokens : true,        
-    }
+    },
+
+    socialProviders : {
+        google : {
+            clientId : process.env.GOOGLE_CLIENT_ID!,
+            clientSecret : process.env.GOOGLE_CLIENT_SECRET!,
+        },
+        github : {
+            clientId : process.env.GITHUB_CLIENT_ID!,
+            clientSecret : process.env.GITHUB_CLIENT_SECRET!,
+        },
+        discord : {
+            clientId : process.env.DISCORD_CLIENT_ID!,
+            clientSecret : process.env.DISCORD_CLIENT_SECRET!,
+        },
+    },
+
+
+
+
+
+
+
 };

@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
-import { auth } from './lib/better-auth/index.js';
+import { auth } from './lib/auth/index.js';
 import { cors } from 'hono/cors';
 import { logger} from 'hono/logger'
+import 'dotenv/config'
 
 const app = new Hono();
 
@@ -24,7 +25,7 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
 });
 
 app.get('/', (c) => {
-    return c.text('hi man')
+    return c.redirect(process.env.REDIRECT_URL!)
 });
 
 export default app;

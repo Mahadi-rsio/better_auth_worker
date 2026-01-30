@@ -7,7 +7,7 @@ import * as schema from './schema.js';
 import { Pool} from '@neondatabase/serverless'
 
 const pool = new Pool({
-    connectionString: process.env.DB ,
+    connectionString: process.env.POSTGRE_DB_URL!,
 });
 
 const db = drizzle(pool);
