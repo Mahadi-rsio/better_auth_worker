@@ -4,21 +4,20 @@ import { bearer, openAPI } from 'better-auth/plugins';
 import 'dotenv/config';
 import { jwtPlugin } from './jwt.plugin.js';
 
-// In here User delete is disabled
-// Currently add redis for session only
-// we have to make custom adapter for jwt cache for redis
-// jwt expirationTime is set for 7 days
-// cookieCache has 30 minuite expirationTime
-// import openAPI to use
+
+/**
+ In here User delete is disabled
+ Currently add redis for session and jwt
+ jwt expirationTime is set for 7 days
+ cookieCache has 30 minuite expirationTime
+**/
+
+export const basePath : string = '/api/0/e/G/fXfsr56GCFVGHBNJMKHYTGFRDESFYUGUB/auth';
 
 export const betterAuthOptions: BetterAuthOptions = {
     appName: 'Auth',
 
-    basePath: '/api/auth',
-
-    /*@Todo -- Add here your origin @EX */
-    /*@Todo -- Like your Frontend app url */
-    /*@Todo -- http://localhost:5173 */
+    basePath: basePath,
     trustedOrigins: [
         //Your Other origin here or Frontend
         process.env.ORIGIN!,
@@ -38,7 +37,6 @@ export const betterAuthOptions: BetterAuthOptions = {
     },
 
     plugins: [
-        // openAPI is disabled by default
         openAPI(),
         jwtPlugin,
         bearer(),
