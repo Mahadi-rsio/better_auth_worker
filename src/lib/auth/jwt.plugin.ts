@@ -9,15 +9,25 @@ export const jwtPlugin = jwt({
     adapter: {
         /**
          * Get all stored JWKs
+         * Upstash Redis often auto-parses JSON in lists, so we handle both 
+         * string and object types to prevent JSON.parse errors.
          */
         getJwks: async () => {
             const data = await redis.lrange(JWKS_KEY, 0, -1);
-            if (!data.length) return [];
+            if (!data || !data.length) return [];
 
             return data.map((item) => {
-                const parsed = JSON.parse(item);
-                if (parsed.createdAt) parsed.createdAt = new Date(parsed.createdAt);
-                if (parsed.expiresAt) parsed.expiresAt = new Date(parsed.expiresAt);
+                // If item is already an object, use it. If it's a string, parse it.
+                const parsed = typeof item === 'string' ? JSON.parse(item) : item;
+
+                // Better Auth expects Date objects for these fields
+                if (parsed.createdAt) {
+                    parsed.createdAt = new Date(parsed.createdAt);
+                }
+                if (parsed.expiresAt) {
+                    parsed.expiresAt = new Date(parsed.expiresAt);
+                }
+
                 return parsed as Jwk;
             });
         },
@@ -36,7 +46,10 @@ export const jwtPlugin = jwt({
                 crv: data.crv ?? 'Ed25519',
             };
 
+            // We stringify here to ensure a consistent format in the Redis list
             await redis.lpush(JWKS_KEY, JSON.stringify(jwk));
+
+            // Keep only the last 5 keys to prevent the list from growing indefinitely
             await redis.ltrim(JWKS_KEY, 0, 4);
 
             return jwk;
@@ -44,6 +57,8 @@ export const jwtPlugin = jwt({
     },
 
     jwt: {
+        // Defined in your options as 7 days
         expirationTime: '7d',
     },
 });
+

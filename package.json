@@ -9,6 +9,9 @@
     "dependencies": {
         "@hono/node-server": "^1.19.7",
         "@neondatabase/serverless": "^1.0.2",
+        "@octokit/auth-app": "^8.2.0",
+        "@octokit/rest": "^22.0.1",
+        "@upstash/redis": "^1.36.2",
         "better-auth": "^1.4.18",
         "dotenv": "^17.2.3",
         "drizzle-orm": "^0.44.4",

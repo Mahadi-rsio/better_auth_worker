@@ -16,6 +16,7 @@ export const betterAuthOptions: BetterAuthOptions = {
 
     basePath: '/api/auth',
     trustedOrigins: [
+        "http://localhost:5173",
         //Your Other origin here or Frontend
         process.env.ORIGIN!,
     ],
@@ -25,7 +26,9 @@ export const betterAuthOptions: BetterAuthOptions = {
             return await redis.get(key);
         },
         set: async (key, value, ttl) => {
-            if (ttl) await redis.set(key, value, 'EX', ttl);
+            if (ttl) await redis.set(key, value, {
+                ex: ttl
+            });
             else await redis.set(key, value);
         },
         delete: async (key) => {
@@ -45,21 +48,13 @@ export const betterAuthOptions: BetterAuthOptions = {
             maxAge: 30 * 60,
         },
     },
-    emailAndPassword: {
-        enabled: true,
-    },
     socialProviders: {
-        google: {
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        },
         github: {
             clientId: process.env.GITHUB_CLIENT_ID!,
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-        },
-        discord: {
-            clientId: process.env.DISCORD_CLIENT_ID!,
-            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+            scope: [
+                "repo"
+            ]
         },
     },
 };
